@@ -76,7 +76,7 @@ interface EmailParams {
   to_name: string;
   to_email: string;
   gifts_list: string;
-  [key: string]: any; // Permite outros parâmetros do EmailJS
+  [key: string]: string; // Permite outros parâmetros do EmailJS
 }
 
 // Interface para email de confirmação do convidado
@@ -122,22 +122,23 @@ export async function sendConfirmationEmail(
 
     console.log("✅ Email enviado com sucesso:", response);
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
     console.error("❌ Erro ao enviar email:", error);
     return {
       success: false,
-      error: error?.text || "Erro ao enviar email",
+      error: "Erro ao enviar email",
     };
   }
 }
 
 // Interface para relatório administrativo
 interface AdminEmailParams {
+  to_email: string;
   guest_name: string;
   guest_gifts: string;
   full_report: string;
-  total_guests: number;
-  [key: string]: any;
+  total_guests: string;
+  [key: string]: string;
 }
 
 /**
@@ -196,7 +197,7 @@ export async function sendAdminReport(
         guest_name: guestName,
         guest_gifts: guestGiftsList,
         full_report: fullReport || "Nenhum presente escolhido ainda.",
-        total_guests: totalGuests,
+        total_guests: totalGuests.toString(),
       };
 
       return await emailjs.send(
@@ -214,11 +215,11 @@ export async function sendAdminReport(
       emails.join(", ")
     );
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
     console.error("❌ Erro ao enviar relatório admin:", error);
     return {
       success: false,
-      error: error?.text || "Erro ao enviar relatório",
+      error: "Erro ao enviar relatório",
     };
   }
 }
