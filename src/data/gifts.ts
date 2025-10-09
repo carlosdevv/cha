@@ -83,7 +83,9 @@ export const giftCategories: GiftCategory[] = [
         id: "Cama Báu e Colchão Queen",
         name: "Cama Báu e Colchão Queen",
         category: "most-wanted",
-        links: [],
+        links: [
+          "https://www.leroymerlin.com.br/cama-box-bau---colchao-ortobom-de-espuma-d45-airtech-ortopillow-150-queen-158-cm_1572216566?gad_campaignid=18476041400&gbraid=0AAAAADkzLZ7M_ogtJ03Qr9u68wuz1jvEo&region=outros",
+        ],
         selectedBy: [],
         maxAttempts: 1,
       },
@@ -186,16 +188,6 @@ export const giftCategories: GiftCategory[] = [
     name: "Cozinha",
     gifts: [
       {
-        id: "Lixeira",
-        name: "Lixeira",
-        category: "kitchen",
-        links: [
-          "https://site.fastshop.com.br/lixeira-com-pedal-tramontina-brasil-plus-30-litros-em-aco-inox-acetinado-91796/p?idsku=96655&utm_source=google&utm_medium=cpc&utm_campaign=22827145581&utm_term=pmax_3p&gad_source=1&gad_campaignid=22827145581&gclid=CjwKCAjwup3HBhAAEiwA7euZusMD9o9PLPZKyjv-RkfxvXOtMvI53m7jpolPdwsE38-SaA7InOgk-xoCfxcQAvD_BwE",
-        ],
-        selectedBy: [],
-        maxAttempts: 1,
-      },
-      {
         id: "Conjunto Frigideira",
         name: "Conjunto Frigideira",
         category: "kitchen",
@@ -216,12 +208,31 @@ export const giftCategories: GiftCategory[] = [
         maxAttempts: 1,
       },
       {
+        id: "Kit Formas",
+        name: "Kit Formas",
+        category: "kitchen",
+        type: "super-cheap",
+        links: ["https://s.shopee.com.br/3fuw0UvwaD?share_channel_code=1"],
+        selectedBy: [],
+        maxAttempts: 1,
+      },
+      {
         id: "Tábua de Corte",
         name: "Tábua de Corte",
         category: "kitchen",
         type: "super-cheap",
         links: [
           "https://shopee.com.br/product/351546383/22293657047?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkVHQ3ZkZSUTMrR3pBWmZZNzdrcnRBMzI3NFczaVQ1TUlla0J0Sk04V2xXM1lxUUJ2b2FnSFBSM2xReFRvdWhtMGJPTWI5YUFLOTg5OVRTZkVkUDRJS3hUTWFhOFU3TWZKcjdDK0JKY3lKL0xyVXd6aVJ6VEk2ZnZTQnpzRjlsY2hBPT0",
+        ],
+        selectedBy: [],
+        maxAttempts: 1,
+      },
+      {
+        id: "Lixeira",
+        name: "Lixeira",
+        category: "kitchen",
+        links: [
+          "https://site.fastshop.com.br/lixeira-com-pedal-tramontina-brasil-plus-30-litros-em-aco-inox-acetinado-91796/p?idsku=96655&utm_source=google&utm_medium=cpc&utm_campaign=22827145581&utm_term=pmax_3p&gad_source=1&gad_campaignid=22827145581&gclid=CjwKCAjwup3HBhAAEiwA7euZusMD9o9PLPZKyjv-RkfxvXOtMvI53m7jpolPdwsE38-SaA7InOgk-xoCfxcQAvD_BwE",
         ],
         selectedBy: [],
         maxAttempts: 1,
