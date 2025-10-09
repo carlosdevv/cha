@@ -35,10 +35,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Função para enviar mensagem via Twilio WhatsApp
 async function sendWhatsAppNotification(guestName: string, gifts: string[]) {
-  const accountSid = 'AC5d60de64d2e953c93cd1cb7558c9b340';
-  const authToken = '5e3d1f22839f7b5fd78c1e46992be5da';
-  const fromNumber = 'whatsapp:+14155238886'; // Ex: whatsapp:+14155238886
-  const toNumber = 'whatsapp:+5571994011114'; // Ex: whatsapp:+5511999999999
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  const fromNumber = process.env.TWILIO_WHATSAPP_FROM; // Ex: whatsapp:+14155238886
+  const toNumber = process.env.TWILIO_WHATSAPP_TO; // Ex: whatsapp:+5511999999999
   
   // Se não tiver as credenciais configuradas, apenas loga no console
   if (!accountSid || !authToken || !fromNumber || !toNumber) {

@@ -85,9 +85,9 @@ export async function sendConfirmationEmail(
   gifts: string[]
 ): Promise<{ success: boolean; error?: string }> {
   
-  const serviceId = 'service_cf36lgd';
-  const templateId = 'template_agjrkek';
-  const publicKey = '-0SxKLZ6A07sdi7m8';
+  const serviceId = process.env.EMAILJS_SERVICE_ID;
+  const templateId = process.env.EMAILJS_TEMPLATE_ID;
+  const publicKey = process.env.EMAILJS_PUBLIC_KEY;
 
   // Se não tiver as credenciais configuradas, apenas loga no console
   if (!serviceId || !templateId || !publicKey) {

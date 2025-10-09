@@ -2,12 +2,12 @@ import { getApps, initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBN7qtJZQJCRGJLAooj_8TbxmFchNp-JZw",
-  authDomain: "cha-casa-nova-678f6.firebaseapp.com",
-  projectId: "cha-casa-nova-678f6",
-  storageBucket: "cha-casa-nova-678f6.firebasestorage.app",
-  messagingSenderId: "595325942667",
-  appId: "1:595325942667:web:850b1c87e02296c7d98d8e",
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
 };
 
 const app =
