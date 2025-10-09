@@ -154,9 +154,6 @@ export async function sendAdminReport(
   const templateId = process.env.NEXT_PUBLIC_EMAILJS_ADMIN_TEMPLATE_ID; // Template diferente para admin
   const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
 
-  // Emails dos administradores (pode adicionar múltiplos separados por vírgula)
-  const adminEmails = "carloslopessf@gmail.com,julia.albuquerquel08@gmail.com";
-
   if (!serviceId || !templateId || !publicKey) {
     console.log(
       "⚠️ EmailJS Admin não configurado. Relatório que seria enviado:"

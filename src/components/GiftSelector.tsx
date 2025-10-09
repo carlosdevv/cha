@@ -4,7 +4,8 @@ import { Gift, GiftCategory } from '@/app/types';
 import { getGiftsSelectionData } from '@/lib/firebaseService';
 import { CheckCircleIcon, ExclamationCircleIcon, GiftIcon, ShoppingBagIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useCallback, useEffect, useState } from 'react';
 
 interface GiftSelectorProps {
   categories: GiftCategory[];
@@ -28,12 +29,10 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [showBaianoModal, setShowBaianoModal] = useState(false);
   const [mergedCategories, setMergedCategories] = useState<GiftCategory[]>(categories);
-  const [isLoadingFirebase, setIsLoadingFirebase] = useState(true);
 
   // Busca dados do Firebase ao montar o componente
   useEffect(() => {
     const loadFirebaseData = async () => {
-      setIsLoadingFirebase(true);
       try {
         const selectionData = await getGiftsSelectionData();
         
@@ -53,12 +52,23 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
       } catch (error) {
         console.error('Erro ao carregar dados do Firebase:', error);
         setMergedCategories(categories);
-      } finally {
-        setIsLoadingFirebase(false);
       }
     };
     
     loadFirebaseData();
+  }, [categories]);
+
+  const fetchGiftPreview = useCallback(async (giftId: string, url: string) => {
+    try {
+      const response = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        setGiftPreviews(prev => new Map(prev).set(giftId, data.data));
+      }
+    } catch (error) {
+      console.error('Erro ao carregar preview:', error);
+    }
   }, []);
 
   // Carrega preview do produto quando hover no link
@@ -73,20 +83,7 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
         fetchGiftPreview(gift.id, firstLink);
       }
     }
-  }, [hoveredLink, mergedCategories]);
-
-  const fetchGiftPreview = async (giftId: string, url: string) => {
-    try {
-      const response = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
-      const data = await response.json();
-      
-      if (data.success && data.data) {
-        setGiftPreviews(prev => new Map(prev).set(giftId, data.data));
-      }
-    } catch (error) {
-      console.error('Erro ao carregar preview:', error);
-    }
-  };
+  }, [hoveredLink, mergedCategories, giftPreviews, fetchGiftPreview]);
 
   const toggleGift = (gift: Gift) => {
     // Verifica se o item está esgotado
@@ -264,9 +261,7 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
 
         {/* Categorias de presentes */}
         <div className="space-y-12">
-          {categoriesWithGifts.map((category, categoryIndex) => {
-            const isExpanded = expandedCategories.has(category.id);
-            return (
+          {categoriesWithGifts.map((category, categoryIndex) => (
             <motion.div
               key={category.id}
               initial={{ opacity: 0, y: 50 }}
@@ -435,10 +430,13 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
                                           className="popover absolute left-0 bottom-full mb-2 p-4 w-64"
                                           style={{ pointerEvents: 'none', zIndex: 9999 }}
                                         >
-                                          <img
+                                          <Image
                                             src={preview.image!}
                                             alt={preview.title}
+                                            width={256}
+                                            height={128}
                                             className="w-full h-32 object-cover rounded-lg mb-2"
+                                            unoptimized
                                           />
                                           <p className="text-sm font-semibold line-clamp-2" style={{ color: 'var(--black)' }}>
                                             {preview.title}
@@ -488,8 +486,7 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
                 )}
               </AnimatePresence>
             </motion.div>
-          );
-          })}
+          ))}
         </div>
 
         {/* Botões de ação */}
