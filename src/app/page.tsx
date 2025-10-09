@@ -11,6 +11,12 @@ import { Gift } from './types';
 
 type Step = 'landing' | 'confirmation' | 'gifts' | 'thanks';
 
+interface Confirmation {
+  name: string;
+  selectedGifts: string[];
+  timestamp?: number;
+}
+
 export default function Home() {
   const [currentStep, setCurrentStep] = useState<Step>('landing');
   const [guestName, setGuestName] = useState('');
@@ -52,10 +58,10 @@ export default function Home() {
           const { sendAdminReport } = await import('@/lib/emailService');
           
           // Processa os dados para criar o relatório
-          const allConfirmations = data.allConfirmations || [];
+          const allConfirmations: Confirmation[] = data.allConfirmations || [];
           const giftsMap = new Map<string, string[]>();
           
-          allConfirmations.forEach((conf: any) => {
+          allConfirmations.forEach((conf: Confirmation) => {
             conf.selectedGifts.forEach((giftId: string) => {
               if (!giftsMap.has(giftId)) {
                 giftsMap.set(giftId, []);

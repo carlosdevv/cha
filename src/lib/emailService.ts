@@ -189,31 +189,61 @@ export async function sendAdminReport(
       allGiftsReport.flatMap((item) => item.selectedBy)
     ).size;
 
-    // Envia para cada email de admin
-    const emails = adminEmails.split(",").map((e) => e.trim());
-    const promises = emails.map(async (adminEmail) => {
-      const templateParams: AdminEmailParams = {
-        to_email: adminEmail,
-        guest_name: guestName,
-        guest_gifts: guestGiftsList,
-        full_report: fullReport || "Nenhum presente escolhido ainda.",
-        total_guests: totalGuests.toString(),
-      };
+    // Prepara os parâmetros do template (mesmos para ambos)
+    const baseTemplateParams = {
+      guest_name: guestName,
+      guest_gifts: guestGiftsList,
+      full_report: fullReport || "Nenhum presente escolhido ainda.",
+      total_guests: totalGuests.toString(),
+    };
 
-      return await emailjs.send(
+    // ==========================================
+    // ENVIO 1: Email para Carlos
+    // ==========================================
+    console.log("📧 Enviando relatório para Carlos (carloslopessf@gmail.com)...");
+    
+    const templateParamsCarlos: AdminEmailParams = {
+      ...baseTemplateParams,
+      to_email: "carloslopessf@gmail.com",
+    };
+
+    try {
+      const responseCarlos = await emailjs.send(
         serviceId,
         templateId,
-        templateParams,
+        templateParamsCarlos,
         publicKey
       );
-    });
+      console.log("✅ Email enviado para Carlos com sucesso!", responseCarlos);
+    } catch (errorCarlos) {
+      console.error("❌ ERRO ao enviar email para Carlos:", errorCarlos);
+      throw errorCarlos; // Lança o erro para ser capturado no catch externo
+    }
 
-    await Promise.all(promises);
+    // ==========================================
+    // ENVIO 2: Email para Julia
+    // ==========================================
+    console.log("📧 Enviando relatório para Julia (julia.albuquerquel08@gmail.com)...");
+    
+    const templateParamsJulia: AdminEmailParams = {
+      ...baseTemplateParams,
+      to_email: "julia.albuquerquel08@gmail.com",
+    };
 
-    console.log(
-      "✅ Relatório admin enviado com sucesso para:",
-      emails.join(", ")
-    );
+    try {
+      const responseJulia = await emailjs.send(
+        serviceId,
+        templateId,
+        templateParamsJulia,
+        publicKey
+      );
+      console.log("✅ Email enviado para Julia com sucesso!", responseJulia);
+    } catch (errorJulia) {
+      console.error("❌ ERRO ao enviar email para Julia:", errorJulia);
+      throw errorJulia; // Lança o erro para ser capturado no catch externo
+    }
+
+    console.log("🎉 Ambos os emails de relatório admin foram enviados com sucesso!");
     return { success: true };
   } catch (error) {
     console.error("❌ Erro ao enviar relatório admin:", error);
