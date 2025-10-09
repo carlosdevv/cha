@@ -155,7 +155,7 @@ export async function sendAdminReport(
   const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
 
   // Emails dos administradores (pode adicionar múltiplos separados por vírgula)
-  const adminEmails = "carloslopessf@gmail.com";
+  const adminEmails = "carloslopessf@gmail.com,julia.albuquerquel08@gmail.com";
 
   if (!serviceId || !templateId || !publicKey) {
     console.log(

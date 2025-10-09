@@ -46,6 +46,44 @@ export default function Home() {
 
       if (data.success) {
         toast.success('Confirmação enviada com sucesso!');
+        
+        // Envia email de relatório admin (no client-side)
+        try {
+          const { sendAdminReport } = await import('@/lib/emailService');
+          
+          // Processa os dados para criar o relatório
+          const allConfirmations = data.allConfirmations || [];
+          const giftsMap = new Map<string, string[]>();
+          
+          allConfirmations.forEach((conf: any) => {
+            conf.selectedGifts.forEach((giftId: string) => {
+              if (!giftsMap.has(giftId)) {
+                giftsMap.set(giftId, []);
+              }
+              giftsMap.get(giftId)!.push(conf.name);
+            });
+          });
+          
+          // Cria relatório completo
+          const allGifts = giftCategories.flatMap(cat => cat.gifts);
+          const fullReport = allGifts.map(gift => ({
+            giftName: gift.name,
+            selectedBy: giftsMap.get(gift.id) || []
+          }));
+          
+          // Envia o relatório
+          await sendAdminReport(
+            guestName,
+            gifts.map(g => g.name),
+            fullReport
+          );
+          
+          console.log('✅ Relatório admin enviado com sucesso');
+        } catch (emailError) {
+          console.error('❌ Erro ao enviar relatório admin:', emailError);
+          // Não impede a progressão mesmo se o email falhar
+        }
+        
         setCurrentStep('thanks');
       } else {
         toast.error('Erro ao confirmar presença. Tente novamente.');

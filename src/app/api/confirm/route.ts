@@ -1,5 +1,3 @@
-import { giftCategories } from '@/data/gifts';
-import { sendAdminReport } from '@/lib/emailService';
 import { getConfirmations, saveConfirmation } from '@/lib/firebaseService';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -116,41 +114,14 @@ export async function POST(request: NextRequest) {
     // Envia notificação via WhatsApp
     await sendWhatsAppNotification(name, giftNames);
 
-    // Busca todas as confirmações para criar relatório completo
-    try {
-      const allConfirmations = await getConfirmations();
-      
-      // Cria um Map de presente -> array de nomes
-      const giftsMap = new Map<string, string[]>();
-      
-      allConfirmations.forEach((conf) => {
-        conf.selectedGifts.forEach((giftId) => {
-          if (!giftsMap.has(giftId)) {
-            giftsMap.set(giftId, []);
-          }
-          giftsMap.get(giftId)!.push(conf.name);
-        });
-      });
-      
-      // Converte o Map para array para o relatório
-      const allGifts = giftCategories.flatMap(cat => cat.gifts);
-      const fullReport = allGifts.map(gift => ({
-        giftName: gift.name,
-        selectedBy: giftsMap.get(gift.id) || []
-      }));
-      
-      // Envia email de relatório para os admins
-      await sendAdminReport(name, giftNames, fullReport);
-      
-    } catch (emailError) {
-      console.error('Erro ao enviar relatório admin:', emailError);
-      // Não falha a requisição se o email der erro
-    }
+    // Retorna todas as confirmações para o client-side processar o relatório
+    const allConfirmations = await getConfirmations();
 
     return NextResponse.json({
       success: true,
       message: 'Confirmação salva com sucesso!',
-      id: result.id
+      id: result.id,
+      allConfirmations // Envia para o client-side processar o relatório
     });
 
   } catch (error) {
