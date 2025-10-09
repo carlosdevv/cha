@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmação - Chá de Casa Nova</title>
+</head>
+<body style="margin: 0; padding: 0; background: linear-gradient(135deg, #f5f0e8 0%, #e8dcc8 50%, #f5f0e8 100%); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+    
+    <!-- Card Principal -->
+    <div style="background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 8px 32px rgba(26, 26, 26, 0.1);">
+      
+      <!-- Header -->
+      <div style="background: linear-gradient(135deg, #f5f0e8 0%, #e8dcc8 100%); padding: 40px 20px; text-align: center; border-bottom: 3px solid #c87941;">
+        <div style="font-size: 48px; margin-bottom: 10px;">🏠</div>
+        <h1 style="color: #1a1a1a; font-size: 32px; margin: 10px 0; font-weight: bold;">Chá de Casa Nova</h1>
+        <div style="color: #c87941; font-size: 24px; font-weight: bold; margin-top: 5px;">Tiko & Julia</div>
+      </div>
+
+      <!-- Conteúdo -->
+      <div style="padding: 40px 30px;">
+        
+        <!-- Saudação -->
+        <p style="color: #2d2d2d; font-size: 18px; line-height: 1.6; margin-bottom: 20px;">
+          Olá <strong style="color: #c87941;">{{to_name}}</strong>! 🎉
+        </p>
+
+        <p style="color: #2d2d2d; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+          Obrigado por confirmar sua presença no nosso chá de casa nova! Estamos muito felizes em poder celebrar este momento especial com você.
+        </p>
+
+        <!-- Presentes Escolhidos -->
+        <div style="background: #f5f0e8; border-left: 4px solid #c87941; border-radius: 12px; padding: 20px; margin: 30px 0;">
+          <h2 style="color: #c87941; font-size: 20px; margin: 0 0 15px 0; font-weight: bold;">🎁 Presentes Escolhidos:</h2>
+          <div style="color: #2d2d2d; font-size: 15px; line-height: 1.8; white-space: pre-line;">{{gifts_list}}</div>
+        </div>
+
+        <!-- Detalhes do Evento -->
+        <div style="background: #f5f0e8; border-radius: 12px; padding: 25px; margin: 30px 0;">
+          <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 20px 0; font-weight: bold; text-align: center;">📅 Detalhes do Evento</h2>
+          
+          <!-- Data -->
+          <div style="display: table; width: 100%; margin-bottom: 15px;">
+            <div style="display: table-cell; vertical-align: top; width: 50px;">
+              <span style="font-size: 24px;">📅</span>
+            </div>
+            <div style="display: table-cell; vertical-align: top;">
+              <strong style="color: #2d2d2d; font-size: 15px; display: block;">Data</strong>
+              <span style="color: #6b6b6b; font-size: 14px;">Domingo, 07 de Dezembro de 2025</span>
+            </div>
+          </div>
+
+          <!-- Horário -->
+          <div style="display: table; width: 100%; margin-bottom: 15px;">
+            <div style="display: table-cell; vertical-align: top; width: 50px;">
+              <span style="font-size: 24px;">🕐</span>
+            </div>
+            <div style="display: table-cell; vertical-align: top;">
+              <strong style="color: #2d2d2d; font-size: 15px; display: block;">Horário</strong>
+              <span style="color: #6b6b6b; font-size: 14px;">13:00h</span>
+            </div>
+          </div>
+
+          <!-- Local -->
+          <div style="display: table; width: 100%; margin-bottom: 15px;">
+            <div style="display: table-cell; vertical-align: top; width: 50px;">
+              <span style="font-size: 24px;">📍</span>
+            </div>
+            <div style="display: table-cell; vertical-align: top;">
+              <strong style="color: #2d2d2d; font-size: 15px; display: block;">Local</strong>
+              <span style="color: #6b6b6b; font-size: 14px;">Casa de Vidro Cerimonial</span>
+            </div>
+          </div>
+
+          <!-- Botão Google Maps -->
+          <div style="text-align: center; margin-top: 20px;">
+            <a href="https://www.google.com/maps/search/?api=1&query=Casa+de+Vidro+Cerimonial" target="_blank" style="display: inline-block; background: #c87941; color: white; text-decoration: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; font-size: 14px;">
+              🗺️ Ver no Google Maps
+            </a>
+          </div>
+        </div>
+
+        <!-- Mensagem Final -->
+        <div style="background: linear-gradient(135deg, #fef9f3 0%, #f5f0e8 100%); border-radius: 12px; padding: 20px; margin: 30px 0; text-align: center;">
+          <p style="color: #2d2d2d; font-size: 15px; line-height: 1.6; margin: 0;">
+            Sua generosidade nos deixa muito felizes! Cada presente escolhido com carinho nos ajudará a construir nosso lar cheio de amor e memórias especiais.
+          </p>
+        </div>
+
+        <p style="color: #6b6b6b; font-size: 15px; line-height: 1.6; text-align: center; margin-top: 30px;">
+          Mal podemos esperar para celebrar com você! 💕
+        </p>
+
+      </div>
+
+      <!-- Footer -->
+      <div style="background: linear-gradient(135deg, #e8dcc8 0%, #d4c4a8 100%); padding: 30px 20px; text-align: center; border-top: 3px solid #c87941;">
+        <div style="font-size: 36px; margin-bottom: 10px;">💕</div>
+        <p style="color: #2d2d2d; font-size: 16px; margin: 10px 0;">
+          <strong>Com muito carinho,</strong>
+        </p>
+        <p style="color: #c87941; font-size: 24px; font-weight: bold; margin: 5px 0;">
+          Tiko & Julia
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Rodapé extra -->
+    <div style="text-align: center; padding: 20px; color: #6b6b6b; font-size: 12px;">
+      <p style="margin: 5px 0;">Este é um e-mail de confirmação automático</p>
+      <p style="margin: 5px 0;">Chá de Casa Nova - 07 de Dezembro de 2025</p>
+    </div>
+
+  </div>
+</body>
+</html>
+

@@ -1,0 +1,27 @@
+# Copie este conteúdo para .env.local
+
+# Firebase Configuration
+# Obtenha essas credenciais em https://console.firebase.google.com/
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+
+# Twilio WhatsApp Configuration
+# Crie uma conta em https://www.twilio.com/try-twilio
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
+# Adicione múltiplos números separados por vírgula se necessário
+TWILIO_WHATSAPP_TO=whatsapp:+5511999999999,whatsapp:+5511888888888
+
+# EmailJS Configuration (SUPER SIMPLES!)
+# Crie uma conta em https://www.emailjs.com/ (gratuito até 200 emails/mês)
+# Não precisa de domínio ou configuração de servidor!
+# Veja instruções completas em EMAILJS_SETUP.md
+NEXT_PUBLIC_EMAILJS_SERVICE_ID=service_your_service_id
+NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=template_your_template_id
+NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key
+
