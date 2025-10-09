@@ -21,7 +21,18 @@ TWILIO_WHATSAPP_TO=whatsapp:+5511999999999,whatsapp:+5511888888888
 # Crie uma conta em https://www.emailjs.com/ (gratuito até 200 emails/mês)
 # Não precisa de domínio ou configuração de servidor!
 # Veja instruções completas em EMAILJS_SETUP.md
+
+# Template para confirmação do convidado
 NEXT_PUBLIC_EMAILJS_SERVICE_ID=service_your_service_id
 NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=template_your_template_id
 NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key
+
+# Template para relatório administrativo (NOVO!)
+# Crie um segundo template no EmailJS para relatórios admin
+# Veja instruções em CONFIGURACAO_EMAIL_ADMIN.md
+NEXT_PUBLIC_EMAILJS_ADMIN_TEMPLATE_ID=template_admin_your_id
+
+# Emails dos administradores que receberão relatórios
+# Pode adicionar múltiplos emails separados por vírgula
+NEXT_PUBLIC_ADMIN_EMAILS=carloslopessf@gmail.com
 

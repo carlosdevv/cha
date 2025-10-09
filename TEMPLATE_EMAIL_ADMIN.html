@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Novo Presente Recebido!</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f5f0e8 0%, #e8dcc8 100%); min-height: 100vh;">
+  
+  <!-- Container Principal -->
+  <div style="max-width: 600px; margin: 40px auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.1);">
+    
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #c87941 0%, #e89b6a 100%); padding: 40px 30px; text-align: center;">
+      <div style="font-size: 60px; margin-bottom: 10px;">🎉</div>
+      <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">Novo Presente Recebido!</h1>
+      <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Chá de Casa Nova - Tiko & Julia</p>
+    </div>
+
+    <!-- Conteúdo -->
+    <div style="padding: 40px 30px;">
+      
+      <!-- Alerta de Novo Convidado -->
+      <div style="background: linear-gradient(135deg, #f5f0e8 0%, #e8dcc8 50%, #f5f0e8 100%); border-left: 4px solid #c87941; border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+        <h2 style="color: #1a1a1a; margin: 0 0 15px 0; font-size: 22px;">
+          <span style="color: #c87941;">{{guest_name}}</span> acabou de te presentear! 🎁
+        </h2>
+        <p style="color: #2d2d2d; margin: 0 0 10px 0; font-weight: 600; font-size: 14px;">Presentes escolhidos:</p>
+        <div style="background: white; border-radius: 8px; padding: 15px; white-space: pre-line; font-family: 'Courier New', monospace; font-size: 14px; color: #1a1a1a; line-height: 1.8;">{{guest_gifts}}</div>
+      </div>
+
+      <!-- Separador -->
+      <div style="height: 1px; background: linear-gradient(90deg, transparent, #e8dcc8, transparent); margin: 30px 0;"></div>
+
+      <!-- Relatório Completo -->
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: #1a1a1a; margin: 0 0 15px 0; font-size: 20px; display: flex; align-items: center;">
+          📊 Relatório Completo de Presentes
+        </h3>
+        <p style="color: #6b6b6b; margin: 0 0 20px 0; font-size: 14px;">
+          Até agora, <strong style="color: #c87941;">{{total_guests}} pessoas</strong> confirmaram presença e escolheram presentes:
+        </p>
+        
+        <!-- Lista de Presentes -->
+        <div style="background: #fafafa; border-radius: 12px; padding: 20px; border: 1px solid #e8dcc8;">
+          <div style="white-space: pre-line; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; color: #2d2d2d; line-height: 2;">{{full_report}}</div>
+        </div>
+      </div>
+
+      <!-- Separador -->
+      <div style="height: 1px; background: linear-gradient(90deg, transparent, #e8dcc8, transparent); margin: 30px 0;"></div>
+
+      <!-- Ações Rápidas -->
+      <div style="text-align: center; margin: 30px 0;">
+        <p style="color: #6b6b6b; font-size: 14px; margin-bottom: 20px;">Ações Rápidas:</p>
+        <a href="https://console.firebase.google.com" target="_blank" style="display: inline-block; background: #c87941; color: white; text-decoration: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; font-size: 14px; margin: 5px;">
+          🔥 Ver no Firebase
+        </a>
+      </div>
+
+      <!-- Info -->
+      <div style="background: #f5f0e8; border-radius: 12px; padding: 20px; margin-top: 30px; text-align: center;">
+        <p style="color: #6b6b6b; font-size: 13px; margin: 0; line-height: 1.6;">
+          💡 <strong>Dica:</strong> Você pode adicionar mais emails para receber este relatório editando a variável <code style="background: white; padding: 2px 8px; border-radius: 4px; color: #c87941;">NEXT_PUBLIC_ADMIN_EMAILS</code> no arquivo .env.local
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="background: #f5f0e8; padding: 25px 30px; text-align: center; border-top: 1px solid #e8dcc8;">
+      <p style="color: #6b6b6b; font-size: 12px; margin: 0 0 10px 0;">
+        Este é um email automático do sistema de gerenciamento do Chá de Casa Nova
+      </p>
+      <p style="color: #2d2d2d; font-size: 14px; margin: 0; font-weight: 600;">
+        Tiko & Julia 💕
+      </p>
+      <p style="color: #999; font-size: 11px; margin: 10px 0 0 0;">
+        07 de Dezembro de 2025 • Casa de Vidro Cerimonial
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Rodapé Extra -->
+  <div style="text-align: center; padding: 20px;">
+    <p style="color: #6b6b6b; font-size: 12px; margin: 0;">
+      Powered by EmailJS • Sistema de Notificação Automática
+    </p>
+  </div>
+
+</body>
+</html>
+
