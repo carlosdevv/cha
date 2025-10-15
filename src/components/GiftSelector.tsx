@@ -1,11 +1,17 @@
-'use client';
+"use client";
 
-import { Gift, GiftCategory } from '@/app/types';
-import { getGiftsSelectionData } from '@/lib/firebaseService';
-import { CheckCircleIcon, ExclamationCircleIcon, GiftIcon, ShoppingBagIcon, XCircleIcon } from '@heroicons/react/24/solid';
-import { AnimatePresence, motion } from 'framer-motion';
-import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { Gift, GiftCategory } from "@/app/types";
+import { getGiftsSelectionData } from "@/lib/firebaseService";
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  GiftIcon,
+  ShoppingBagIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/solid";
+import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
 
 interface GiftSelectorProps {
   categories: GiftCategory[];
@@ -20,54 +26,69 @@ interface GiftPreview {
   image: string | null;
 }
 
-export default function GiftSelector({ categories, onSubmit, onBack, guestName }: GiftSelectorProps) {
+export default function GiftSelector({
+  categories,
+  onSubmit,
+  onBack,
+  guestName,
+}: GiftSelectorProps) {
   const [selectedGifts, setSelectedGifts] = useState<Set<string>>(new Set());
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
-  const [giftPreviews, setGiftPreviews] = useState<Map<string, GiftPreview>>(new Map());
-  const [showAlreadySelectedWarning, setShowAlreadySelectedWarning] = useState<string | null>(null);
+  const [giftPreviews, setGiftPreviews] = useState<Map<string, GiftPreview>>(
+    new Map()
+  );
+  const [showAlreadySelectedWarning, setShowAlreadySelectedWarning] = useState<
+    string | null
+  >(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set()
+  );
   const [showBaianoModal, setShowBaianoModal] = useState(false);
-  const [mergedCategories, setMergedCategories] = useState<GiftCategory[]>(categories);
+  const [mergedCategories, setMergedCategories] =
+    useState<GiftCategory[]>(categories);
+  const [showPixModal, setShowPixModal] = useState(false);
 
   // Busca dados do Firebase ao montar o componente
   useEffect(() => {
     const loadFirebaseData = async () => {
       try {
         const selectionData = await getGiftsSelectionData();
-        
+
         // Mescla dados do Firebase com os presentes locais
-        const updatedCategories = categories.map(category => ({
+        const updatedCategories = categories.map((category) => ({
           ...category,
-          gifts: category.gifts.map(gift => {
+          gifts: category.gifts.map((gift) => {
             const firebaseSelectedBy = selectionData.get(gift.id) || [];
             return {
               ...gift,
-              selectedBy: firebaseSelectedBy
+              selectedBy: firebaseSelectedBy,
             };
-          })
+          }),
         }));
-        
+
         setMergedCategories(updatedCategories);
       } catch (error) {
-        console.error('Erro ao carregar dados do Firebase:', error);
+        console.error("Erro ao carregar dados do Firebase:", error);
         setMergedCategories(categories);
       }
     };
-    
+
     loadFirebaseData();
   }, [categories]);
 
   const fetchGiftPreview = useCallback(async (giftId: string, url: string) => {
     try {
-      const response = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
+      const response = await fetch(
+        `/api/link-preview?url=${encodeURIComponent(url)}`
+      );
       const data = await response.json();
-      
+
       if (data.success && data.data) {
-        setGiftPreviews(prev => new Map(prev).set(giftId, data.data));
+        setGiftPreviews((prev) => new Map(prev).set(giftId, data.data));
       }
     } catch (error) {
-      console.error('Erro ao carregar preview:', error);
+      console.error("Erro ao carregar preview:", error);
     }
   }, []);
 
@@ -75,8 +96,8 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
   useEffect(() => {
     if (hoveredLink) {
       const gift = mergedCategories
-        .flatMap(cat => cat.gifts)
-        .find(g => g.id === hoveredLink);
+        .flatMap((cat) => cat.gifts)
+        .find((g) => g.id === hoveredLink);
 
       const firstLink = gift?.links?.[0];
       if (firstLink && !giftPreviews.has(hoveredLink)) {
@@ -92,8 +113,14 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
       return; // Não permite selecionar se esgotado
     }
 
+    // Se for o presente PIX, mostra modal especial
+    if (gift.type === "pix") {
+      setShowPixModal(true);
+      return;
+    }
+
     const newSelected = new Set(selectedGifts);
-    
+
     if (newSelected.has(gift.id)) {
       newSelected.delete(gift.id);
       setShowAlreadySelectedWarning(null);
@@ -105,7 +132,7 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
       }
       newSelected.add(gift.id);
     }
-    
+
     setSelectedGifts(newSelected);
   };
 
@@ -121,20 +148,35 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
 
   const shouldShowBaianoModal = (gifts: Gift[], name: string): boolean => {
     // Lista de nomes que devem ver o modal
-    const targetNames = ['caio', 'berman', 'clarissa', 'gerson', 'luiz', 'luiz felipe', 'lara', 'emily', 'luana', 'nogueira', 'geovanna', 'geovana'];
-    
+    const targetNames = [
+      "caio",
+      "berman",
+      "clarissa",
+      "gerson",
+      "luiz",
+      "luiz felipe",
+      "lara",
+      "emily",
+      "luana",
+      "nogueira",
+      "geovanna",
+      "geovana",
+    ];
+
     // Verifica se o nome contém algum dos nomes da lista
     const nameLower = name.toLowerCase();
-    const hasTargetName = targetNames.some(targetName => nameLower.includes(targetName));
-    
+    const hasTargetName = targetNames.some((targetName) =>
+      nameLower.includes(targetName)
+    );
+
     if (!hasTargetName) return false;
 
     // Calcula valor total baseado nos types
     let totalValue = 0;
-    gifts.forEach(gift => {
-      if (gift.type === 'super-cheap') {
+    gifts.forEach((gift) => {
+      if (gift.type === "super-cheap") {
         totalValue += 100; // Valor estimado < 100
-      } else if (gift.type === 'cheap') {
+      } else if (gift.type === "cheap") {
         totalValue += 200; // Valor estimado < 200
       } else {
         totalValue += 300; // Valor estimado >= 300
@@ -146,13 +188,13 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
 
   const handleSubmit = () => {
     if (selectedGifts.size === 0) {
-      alert('Por favor, selecione pelo menos um presente!');
+      alert("Por favor, selecione pelo menos um presente!");
       return;
     }
 
     const gifts = mergedCategories
-      .flatMap(cat => cat.gifts)
-      .filter(g => selectedGifts.has(g.id));
+      .flatMap((cat) => cat.gifts)
+      .filter((g) => selectedGifts.has(g.id));
 
     // Verifica se deve mostrar modal divertido
     if (shouldShowBaianoModal(gifts, guestName)) {
@@ -167,8 +209,8 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
   const handleContinueWithLowValue = () => {
     setShowBaianoModal(false);
     const gifts = mergedCategories
-      .flatMap(cat => cat.gifts)
-      .filter(g => selectedGifts.has(g.id));
+      .flatMap((cat) => cat.gifts)
+      .filter((g) => selectedGifts.has(g.id));
     setIsSubmitting(true);
     onSubmit(gifts);
   };
@@ -177,42 +219,67 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
     setShowBaianoModal(false);
   };
 
-  // Filtra categorias que têm presentes
-  const categoriesWithGifts = mergedCategories.filter(cat => cat.gifts && cat.gifts.length > 0);
+  const handlePixSelection = () => {
+    setShowPixModal(false);
+    const newSelected = new Set(selectedGifts);
+    newSelected.add("faca-um-pix");
+    setSelectedGifts(newSelected);
 
+    // Avança direto para a última etapa
+    const gifts = mergedCategories
+      .flatMap((cat) => cat.gifts)
+      .filter((g) => newSelected.has(g.id));
+    setIsSubmitting(true);
+    onSubmit(gifts);
+  };
+
+  const handleCancelPix = () => {
+    setShowPixModal(false);
+  };
+
+  // Filtra categorias que têm presentes (excluindo PIX)
+  const categoriesWithGifts = mergedCategories.filter(
+    (cat) => cat.gifts && cat.gifts.length > 0 && cat.id !== "general"
+  );
+
+  // Pega o presente PIX separadamente
+  const pixGift = mergedCategories
+    .flatMap((cat) => cat.gifts)
+    .find((gift) => gift.type === "pix");
 
   const formattedTexts = (guest: string) => {
-    if (guest.toLowerCase().includes('gerson')) {
+    if (guest.toLowerCase().includes("gerson")) {
       return {
-        title: 'Eai seu verme maldito???',
-        description: 'Macaco do caralho, Coça a porra do bolso fdp',
-        quote: 'Se for ficar nessa má vontade melhor nem ir mano',
-        cta: 'Deboa Tikão, você merece.',
-        cancel: 'Eu sou safado e vou vacilar.',
-        footer: 'Life is this, I like this'
+        title: "Eai seu verme maldito???",
+        description: "Macaco do caralho, Coça a porra do bolso fdp",
+        quote: "Se for ficar nessa má vontade melhor nem ir mano",
+        cta: "Deboa Tikão, você merece.",
+        cancel: "Eu sou safado e vou vacilar.",
+        footer: "Life is this, I like this",
       };
     }
 
-    if (guest.toLowerCase().includes('clarissa')) {
+    if (guest.toLowerCase().includes("clarissa")) {
       return {
-        title: 'Não acredito 🫨',
-        description: 'Mande seu namorado coçar o bolso aí',
-        quote: 'Pegue só mais um, namoralzinha 🤌',
-        cta: 'Deboa Tikão, você merece.',
-        cancel: 'My bad Tikão',
-        footer: 'To gastando, vei! O importante é ter você lá com a gente! 💕'
+        title: "Não acredito 🫨",
+        description: "Mande seu namorado coçar o bolso aí",
+        quote: "Pegue só mais um, namoralzinha 🤌",
+        cta: "Deboa Tikão, você merece.",
+        cancel: "My bad Tikão",
+        footer: "To gastando, vei! O importante é ter você lá com a gente! 💕",
       };
     }
 
     return {
-      title: 'Porra é essa?! 🤯',
-      description: 'Qual foi véi? Coça o bolso aí namoral! 💸',
-      quote: 'Pega mais uma paradinha pra ajudar, po! A gente tá montando o lar aqui na humildade 😂',
-      cta: 'Deboa brabo, cês merecem! 🎁',
-      cancel: 'Tô liso(a), vou vacilar.',
-      footer: 'To gastando, vei! O importante é ter você lá com a gente! 💕'
+      title: "Porra é essa?! 🤯",
+      description: "Qual foi véi? Coça o bolso aí namoral! 💸",
+      quote:
+        "Pega mais uma paradinha pra ajudar, po! A gente tá montando o lar aqui na humildade 😂",
+      cta: "Deboa brabo, cês merecem! 🎁",
+      cancel: "Tô liso(a), vou vacilar.",
+      footer: "To gastando, vei! O importante é ter você lá com a gente! 💕",
     };
-  }
+  };
 
   return (
     <div className="min-h-screen py-12 px-4">
@@ -230,31 +297,37 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
             transition={{
               duration: 2,
               repeat: Infinity,
-              ease: "easeInOut"
+              ease: "easeInOut",
             }}
             className="inline-block mb-4 text-6xl"
           >
             🎁
           </motion.div>
-          
-          <h2 className="text-4xl font-bold mb-3" style={{ color: 'var(--black)' }}>
-            Olá, {guestName}! 
+
+          <h2
+            className="text-4xl font-bold mb-3"
+            style={{ color: "var(--black)" }}
+          >
+            Olá, {guestName}!
           </h2>
-          <p className="text-lg mb-2" style={{ color: 'var(--gray)' }}>
+          <p className="text-lg mb-2" style={{ color: "var(--gray)" }}>
             Escolha os presentes que gostaria de nos dar
           </p>
-          <p className="text-sm" style={{ color: 'var(--gray)', opacity: 0.8 }}>
+          <p className="text-sm" style={{ color: "var(--gray)", opacity: 0.8 }}>
             Você pode selecionar quantos quiser! ✨
           </p>
-          
+
           {/* Contador de selecionados */}
           <motion.div
             className="mt-6 inline-block glass-strong px-6 py-3 rounded-full"
             animate={selectedGifts.size > 0 ? { scale: [1, 1.05, 1] } : {}}
             transition={{ duration: 0.3 }}
           >
-            <p className="font-semibold" style={{ color: 'var(--terracota)' }}>
-              {selectedGifts.size} {selectedGifts.size === 1 ? 'presente selecionado' : 'presentes selecionados'}
+            <p className="font-semibold" style={{ color: "var(--terracota)" }}>
+              {selectedGifts.size}{" "}
+              {selectedGifts.size === 1
+                ? "presente selecionado"
+                : "presentes selecionados"}
             </p>
           </motion.div>
         </motion.div>
@@ -270,32 +343,62 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
             >
               {/* Header da categoria com botão de expandir/minimizar */}
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-bold flex items-center gap-3" style={{ color: 'var(--black)' }}>
-                  <ShoppingBagIcon className="w-7 h-7" style={{ color: 'var(--terracota)' }} />
+                <h3
+                  className="text-2xl font-bold flex items-center gap-3"
+                  style={{ color: "var(--black)" }}
+                >
+                  <ShoppingBagIcon
+                    className="w-7 h-7"
+                    style={{ color: "var(--terracota)" }}
+                  />
                   {category.name}
-                  <span className="text-sm font-normal" style={{ color: 'var(--gray)' }}>
-                    ({category.gifts.length} {category.gifts.length === 1 ? 'item' : 'itens'})
+                  <span
+                    className="text-sm font-normal"
+                    style={{ color: "var(--gray)" }}
+                  >
+                    ({category.gifts.length}{" "}
+                    {category.gifts.length === 1 ? "item" : "itens"})
                   </span>
                 </h3>
-                
+
                 <motion.button
                   onClick={() => toggleCategory(category.id)}
                   className="glass px-4 py-2 rounded-lg font-medium flex items-center gap-2"
-                  style={{ color: 'var(--terracota)' }}
+                  style={{ color: "var(--terracota)" }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   {expandedCategories.has(category.id) ? (
                     <>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 15l7-7 7 7"
+                        />
                       </svg>
                       Minimizar
                     </>
                   ) : (
                     <>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                       Exibir
                     </>
@@ -307,180 +410,280 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
                 {expandedCategories.has(category.id) && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
+                    animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.3 }}
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {category.gifts.map((gift, giftIndex) => {
-                  const isSelected = selectedGifts.has(gift.id);
-                  const isAlreadySelected = gift.selectedBy.length > 0;
-                  const isSoldOut = gift.selectedBy.length >= gift.maxAttempts;
-                  const showWarning = showAlreadySelectedWarning === gift.id;
-                  const preview = giftPreviews.get(gift.id);
-                  const showPreview = hoveredLink === gift.id && preview && preview.image;
+                      {category.gifts.map((gift, giftIndex) => {
+                        const isSelected = selectedGifts.has(gift.id);
+                        const isAlreadySelected = gift.selectedBy.length > 0;
+                        const isSoldOut =
+                          gift.selectedBy.length >= gift.maxAttempts;
+                        const showWarning =
+                          showAlreadySelectedWarning === gift.id;
+                        const preview = giftPreviews.get(gift.id);
+                        const showPreview =
+                          hoveredLink === gift.id && preview && preview.image;
 
-                  return (
-                    <motion.div
-                      key={gift.id}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: categoryIndex * 0.1 + giftIndex * 0.05 }}
-                      className="relative"
-                    >
-                      <motion.button
-                        onClick={() => toggleGift(gift)}
-                        disabled={isSoldOut}
-                        className="w-full h-full min-h-[180px] p-6 rounded-2xl text-left relative overflow-visible transition-all duration-300 flex flex-col"
-                        style={{
-                          background: isSelected 
-                            ? 'rgba(255, 255, 255, 0.6)' 
-                            : isSoldOut
-                            ? 'rgba(255, 255, 255, 0.15)'
-                            : isAlreadySelected
-                            ? 'rgba(255, 255, 255, 0.2)'
-                            : 'rgba(255, 255, 255, 0.3)',
-                          backdropFilter: 'blur(10px)',
-                          border: isSelected ? '2px solid var(--terracota)' : isSoldOut ? '1px solid rgba(200, 121, 65, 0.3)' : '1px solid rgba(232, 220, 200, 0.3)',
-                          opacity: isSoldOut ? 0.5 : (isAlreadySelected && !isSelected ? 0.7 : 1),
-                          cursor: isSoldOut ? 'not-allowed' : 'pointer'
-                        }}
-                        whileHover={!isSoldOut ? { scale: 1.03 } : {}}
-                        whileTap={!isSoldOut ? { scale: 0.97 } : {}}
-                      >
-                        {/* Badge de seleção */}
-                        <AnimatePresence>
-                          {isSelected && (
-                            <motion.div
-                              initial={{ scale: 0, rotate: -180 }}
-                              animate={{ scale: 1, rotate: 0 }}
-                              exit={{ scale: 0, rotate: 180 }}
-                              className="absolute top-3 right-3 z-10"
+                        return (
+                          <motion.div
+                            key={gift.id}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{
+                              delay: categoryIndex * 0.1 + giftIndex * 0.05,
+                            }}
+                            className="relative"
+                          >
+                            <motion.button
+                              onClick={() => toggleGift(gift)}
+                              disabled={isSoldOut}
+                              className="w-full h-full min-h-[180px] p-6 rounded-2xl text-left relative overflow-visible transition-all duration-300 flex flex-col"
+                              style={{
+                                background: isSelected
+                                  ? "rgba(255, 255, 255, 0.6)"
+                                  : isSoldOut
+                                  ? "rgba(255, 255, 255, 0.15)"
+                                  : isAlreadySelected
+                                  ? "rgba(255, 255, 255, 0.2)"
+                                  : "rgba(255, 255, 255, 0.3)",
+                                backdropFilter: "blur(10px)",
+                                border: isSelected
+                                  ? "2px solid var(--terracota)"
+                                  : isSoldOut
+                                  ? "1px solid rgba(200, 121, 65, 0.3)"
+                                  : "1px solid rgba(232, 220, 200, 0.3)",
+                                opacity: isSoldOut
+                                  ? 0.5
+                                  : isAlreadySelected && !isSelected
+                                  ? 0.7
+                                  : 1,
+                                cursor: isSoldOut ? "not-allowed" : "pointer",
+                              }}
+                              whileHover={!isSoldOut ? { scale: 1.03 } : {}}
+                              whileTap={!isSoldOut ? { scale: 0.97 } : {}}
                             >
-                              <CheckCircleIcon className="w-8 h-8 text-green-600" />
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-
-                        {/* Badge ESGOTADO */}
-                        {isSoldOut && (
-                          <motion.div
-                            initial={{ scale: 0, rotate: -180 }}
-                            animate={{ scale: 1, rotate: 0 }}
-                            className="absolute top-3 right-3 z-10"
-                          >
-                            <div className="glass-strong px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1" style={{ backgroundColor: 'var(--terracota)', color: 'white' }}>
-                              <XCircleIcon className="w-4 h-4" />
-                              ESGOTADO
-                            </div>
-                          </motion.div>
-                        )}
-
-                        {/* Badge "já escolhido" */}
-                        {isAlreadySelected && !isSelected && !isSoldOut && (
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="absolute top-3 right-3 z-10"
-                          >
-                            <div className="glass-strong px-2 py-1 rounded-full text-xs font-medium" style={{ color: 'var(--gray)' }}>
-                              {gift.selectedBy.length}/{gift.maxAttempts}
-                            </div>
-                          </motion.div>
-                        )}
-
-                        {/* Conteúdo do presente */}
-                        <div className="relative z-0 flex-1 flex flex-col">
-                          <div className="mb-3">
-                            <GiftIcon 
-                              className="w-10 h-10" 
-                              style={{ color: isSelected ? 'var(--terracota)' : 'var(--gray)' }} 
-                            />
-                          </div>
-                          
-                          <h4 className="font-semibold mb-auto pr-10 min-h-[3rem] flex items-center" style={{ color: 'var(--black)' }}>
-                            {gift.name}
-                          </h4>
-
-                          {gift.links && gift.links.length > 0 && (
-                            <div className="relative mt-4 flex flex-wrap gap-2">
-                              {gift.links.map((link, linkIndex) => (
-                                <div key={linkIndex} className="relative">
-                                  <a
-                                    href={link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={(e) => e.stopPropagation()}
-                                    onMouseEnter={() => setHoveredLink(gift.id)}
-                                    onMouseLeave={() => setHoveredLink(null)}
-                                    className="text-xs font-medium underline inline-block"
-                                    style={{ color: 'var(--terracota)' }}
+                              {/* Badge de seleção */}
+                              <AnimatePresence>
+                                {isSelected && (
+                                  <motion.div
+                                    initial={{ scale: 0, rotate: -180 }}
+                                    animate={{ scale: 1, rotate: 0 }}
+                                    exit={{ scale: 0, rotate: 180 }}
+                                    className="absolute top-3 right-3 z-10"
                                   >
-                                    {(gift.links?.length || 0) > 1 ? `Opção ${linkIndex + 1}` : 'Ver produto'} →
-                                  </a>
+                                    <CheckCircleIcon className="w-8 h-8 text-green-600" />
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
 
-                                  {/* Popover do preview - apenas no primeiro link */}
-                                  {linkIndex === 0 && (
-                                    <AnimatePresence>
-                                      {showPreview && (
-                                        <motion.div
-                                          initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                                          exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                                          className="popover absolute left-0 bottom-full mb-2 p-4 w-64"
-                                          style={{ pointerEvents: 'none', zIndex: 9999 }}
-                                        >
-                                          <Image
-                                            src={preview.image!}
-                                            alt={preview.title}
-                                            width={256}
-                                            height={128}
-                                            className="w-full h-32 object-cover rounded-lg mb-2"
-                                            unoptimized
-                                          />
-                                          <p className="text-sm font-semibold line-clamp-2" style={{ color: 'var(--black)' }}>
-                                            {preview.title}
-                                          </p>
-                                          {preview.description && (
-                                            <p className="text-xs mt-1 line-clamp-2" style={{ color: 'var(--gray)' }}>
-                                              {preview.description}
-                                            </p>
-                                          )}
-                                        </motion.div>
-                                      )}
-                                    </AnimatePresence>
+                              {/* Badge ESGOTADO */}
+                              {isSoldOut && (
+                                <motion.div
+                                  initial={{ scale: 0, rotate: -180 }}
+                                  animate={{ scale: 1, rotate: 0 }}
+                                  className="absolute top-3 right-3 z-10"
+                                >
+                                  <div
+                                    className="glass-strong px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1"
+                                    style={{
+                                      backgroundColor: "var(--terracota)",
+                                      color: "white",
+                                    }}
+                                  >
+                                    <XCircleIcon className="w-4 h-4" />
+                                    ESGOTADO
+                                  </div>
+                                </motion.div>
+                              )}
+
+                              {/* Badge "já escolhido" */}
+                              {isAlreadySelected &&
+                                !isSelected &&
+                                !isSoldOut && (
+                                  <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="absolute top-3 right-3 z-10"
+                                  >
+                                    <div
+                                      className="glass-strong px-2 py-1 rounded-full text-xs font-medium"
+                                      style={{ color: "var(--gray)" }}
+                                    >
+                                      {gift.selectedBy.length}/
+                                      {gift.maxAttempts}
+                                    </div>
+                                  </motion.div>
+                                )}
+
+                              {/* Conteúdo do presente */}
+                              <div className="relative z-0 flex-1 flex flex-col">
+                                <div className="mb-3">
+                                  {gift.type === "pix" ? (
+                                    <div className="w-10 h-10 flex items-center justify-center text-2xl">
+                                      💳
+                                    </div>
+                                  ) : (
+                                    <GiftIcon
+                                      className="w-10 h-10"
+                                      style={{
+                                        color: isSelected
+                                          ? "var(--terracota)"
+                                          : "var(--gray)",
+                                      }}
+                                    />
                                   )}
                                 </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </motion.button>
 
-                      {/* Warning para presentes já escolhidos */}
-                      <AnimatePresence>
-                        {showWarning && !isSoldOut && (
-                          <motion.div
-                            initial={{ opacity: 0, y: -10, scale: 0.9 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: -10, scale: 0.9 }}
-                            className="absolute -bottom-24 left-0 right-0 z-30"
-                          >
-                            <div className="glass-strong rounded-xl p-3 shadow-xl" style={{ border: '2px solid var(--terracota-light)' }}>
-                              <div className="flex items-start gap-2">
-                                <ExclamationCircleIcon className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--terracota)' }} />
-                                <p className="text-sm" style={{ color: 'var(--black-soft)' }}>
-                                  <span className="font-semibold">Opa!</span> Esse item já foi pego. 
-                                  Por que você não pega um novo, po? 😉
-                                </p>
+                                <h4
+                                  className="font-semibold mb-auto pr-10 min-h-[3rem] flex items-center"
+                                  style={{ color: "var(--black)" }}
+                                >
+                                  {gift.name}
+                                </h4>
+
+                                {/* Texto especial para PIX */}
+                                {gift.type === "pix" && (
+                                  <div
+                                    className="mt-2 text-sm"
+                                    style={{ color: "var(--terracota)" }}
+                                  >
+                                    <p className="font-medium">
+                                      Clique para fazer um PIX
+                                    </p>
+                                    <p className="text-xs opacity-80">
+                                      Qualquer valor é bem-vindo! 💕
+                                    </p>
+                                  </div>
+                                )}
+
+                                {gift.links && gift.links.length > 0 && (
+                                  <div className="relative mt-4 flex flex-wrap gap-2">
+                                    {gift.links.map((link, linkIndex) => (
+                                      <div key={linkIndex} className="relative">
+                                        <a
+                                          href={link}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          onClick={(e) => e.stopPropagation()}
+                                          onMouseEnter={() =>
+                                            setHoveredLink(gift.id)
+                                          }
+                                          onMouseLeave={() =>
+                                            setHoveredLink(null)
+                                          }
+                                          className="text-xs font-medium underline inline-block"
+                                          style={{ color: "var(--terracota)" }}
+                                        >
+                                          {(gift.links?.length || 0) > 1
+                                            ? `Opção ${linkIndex + 1}`
+                                            : "Ver produto"}{" "}
+                                          →
+                                        </a>
+
+                                        {/* Popover do preview - apenas no primeiro link */}
+                                        {linkIndex === 0 && (
+                                          <AnimatePresence>
+                                            {showPreview && (
+                                              <motion.div
+                                                initial={{
+                                                  opacity: 0,
+                                                  y: 10,
+                                                  scale: 0.9,
+                                                }}
+                                                animate={{
+                                                  opacity: 1,
+                                                  y: 0,
+                                                  scale: 1,
+                                                }}
+                                                exit={{
+                                                  opacity: 0,
+                                                  y: 10,
+                                                  scale: 0.9,
+                                                }}
+                                                className="popover absolute left-0 bottom-full mb-2 p-4 w-64"
+                                                style={{
+                                                  pointerEvents: "none",
+                                                  zIndex: 9999,
+                                                }}
+                                              >
+                                                <Image
+                                                  src={preview.image!}
+                                                  alt={preview.title}
+                                                  width={256}
+                                                  height={128}
+                                                  className="w-full h-32 object-cover rounded-lg mb-2"
+                                                  unoptimized
+                                                />
+                                                <p
+                                                  className="text-sm font-semibold line-clamp-2"
+                                                  style={{
+                                                    color: "var(--black)",
+                                                  }}
+                                                >
+                                                  {preview.title}
+                                                </p>
+                                                {preview.description && (
+                                                  <p
+                                                    className="text-xs mt-1 line-clamp-2"
+                                                    style={{
+                                                      color: "var(--gray)",
+                                                    }}
+                                                  >
+                                                    {preview.description}
+                                                  </p>
+                                                )}
+                                              </motion.div>
+                                            )}
+                                          </AnimatePresence>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
-                            </div>
+                            </motion.button>
+
+                            {/* Warning para presentes já escolhidos */}
+                            <AnimatePresence>
+                              {showWarning && !isSoldOut && (
+                                <motion.div
+                                  initial={{ opacity: 0, y: -10, scale: 0.9 }}
+                                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                                  exit={{ opacity: 0, y: -10, scale: 0.9 }}
+                                  className="absolute -bottom-24 left-0 right-0 z-30"
+                                >
+                                  <div
+                                    className="glass-strong rounded-xl p-3 shadow-xl"
+                                    style={{
+                                      border:
+                                        "2px solid var(--terracota-light)",
+                                    }}
+                                  >
+                                    <div className="flex items-start gap-2">
+                                      <ExclamationCircleIcon
+                                        className="w-5 h-5 flex-shrink-0 mt-0.5"
+                                        style={{ color: "var(--terracota)" }}
+                                      />
+                                      <p
+                                        className="text-sm"
+                                        style={{ color: "var(--black-soft)" }}
+                                      >
+                                        <span className="font-semibold">
+                                          Opa!
+                                        </span>{" "}
+                                        Esse item já foi pego. Por que você não
+                                        pega um novo, po? 😉
+                                      </p>
+                                    </div>
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </motion.div>
-                  );
-                })}
+                        );
+                      })}
                     </div>
                   </motion.div>
                 )}
@@ -488,6 +691,63 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
             </motion.div>
           ))}
         </div>
+
+        {/* Card PIX em destaque */}
+        {pixGift && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mb-12"
+          >
+            <div className="text-center mb-6">
+              <h3
+                className="text-2xl font-bold mb-2"
+                style={{ color: "var(--black)" }}
+              >
+                💳 Ou prefere nos ajudar com um PIX?
+              </h3>
+              <p className="text-sm" style={{ color: "var(--gray)" }}>
+                Qualquer valor é muito bem-vindo! 💕
+              </p>
+            </div>
+
+            <motion.div
+              className="flex justify-center"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <motion.button
+                onClick={() => setShowPixModal(true)}
+                className="relative overflow-hidden rounded-2xl p-8 max-w-md w-full"
+                style={{
+                  background:
+                    "linear-gradient(135deg, var(--terracota) 0%, #d4a574 100%)",
+                  boxShadow: "0 8px 32px rgba(200, 121, 65, 0.3)",
+                }}
+              >
+                <div className="text-center text-white">
+                  <div className="text-6xl mb-4">💳</div>
+                  <h4 className="text-2xl font-bold mb-2">{pixGift.name}</h4>
+                  <p className="text-lg opacity-90 mb-4">
+                    Clique aqui para fazer um PIX
+                  </p>
+                  <div className="inline-block bg-white/20 px-4 py-2 rounded-full text-sm font-medium">
+                    Qualquer valor é bem-vindo! 💕
+                  </div>
+                </div>
+
+                {/* Efeito de brilho */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                  animate={{ x: ["-100%", "100%"] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  style={{ transform: "skewX(-20deg)" }}
+                />
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
 
         {/* Botões de ação */}
         <motion.div
@@ -499,7 +759,7 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
           <motion.button
             onClick={onBack}
             className="glass px-8 py-4 rounded-full font-semibold"
-            style={{ color: 'var(--gray)' }}
+            style={{ color: "var(--gray)" }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -510,11 +770,18 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
             onClick={handleSubmit}
             disabled={selectedGifts.size === 0 || isSubmitting}
             className="px-12 py-4 rounded-full font-bold text-white relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ background: 'var(--terracota)' }}
-            whileHover={selectedGifts.size > 0 ? { scale: 1.05, boxShadow: "0 12px 40px 0 rgba(200, 121, 65, 0.4)" } : {}}
+            style={{ background: "var(--terracota)" }}
+            whileHover={
+              selectedGifts.size > 0
+                ? {
+                    scale: 1.05,
+                    boxShadow: "0 12px 40px 0 rgba(200, 121, 65, 0.4)",
+                  }
+                : {}
+            }
             whileTap={selectedGifts.size > 0 ? { scale: 0.95 } : {}}
           >
-            {isSubmitting ? 'Confirmando...' : 'Confirmar Presentes'}
+            {isSubmitting ? "Confirmando..." : "Confirmar Presentes"}
           </motion.button>
         </motion.div>
       </div>
@@ -538,10 +805,16 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
             >
               <div className="text-center">
                 <div className="text-6xl mb-4">😅</div>
-                <h3 className="text-2xl font-bold mb-4" style={{ color: 'var(--black)' }}>
+                <h3
+                  className="text-2xl font-bold mb-4"
+                  style={{ color: "var(--black)" }}
+                >
                   {formattedTexts(guestName).title}
                 </h3>
-                <p className="text-lg mb-6" style={{ color: 'var(--black-soft)' }}>
+                <p
+                  className="text-lg mb-6"
+                  style={{ color: "var(--black-soft)" }}
+                >
                   {formattedTexts(guestName).description}
                 </p>
                 <p className="text-base mb-8 text-zinc-900">
@@ -552,8 +825,11 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
                   <motion.button
                     onClick={handleGoBackToSelect}
                     className="w-full py-4 rounded-xl font-bold text-white"
-                    style={{ background: 'var(--terracota)' }}
-                    whileHover={{ scale: 1.02, boxShadow: "0 12px 40px 0 rgba(200, 121, 65, 0.4)" }}
+                    style={{ background: "var(--terracota)" }}
+                    whileHover={{
+                      scale: 1.02,
+                      boxShadow: "0 12px 40px 0 rgba(200, 121, 65, 0.4)",
+                    }}
                     whileTap={{ scale: 0.98 }}
                   >
                     {formattedTexts(guestName).cta}
@@ -562,7 +838,7 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
                   <motion.button
                     onClick={handleContinueWithLowValue}
                     className="w-full py-3 rounded-xl font-medium glass"
-                    style={{ color: 'var(--gray)' }}
+                    style={{ color: "var(--gray)" }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -572,6 +848,120 @@ export default function GiftSelector({ categories, onSubmit, onBack, guestName }
 
                 <p className="text-xs mt-6 text-zinc-700">
                   {formattedTexts(guestName).footer}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal PIX */}
+      <AnimatePresence>
+        {showPixModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 bg-opacity-20 flex items-center justify-center p-4 z-50"
+            onClick={() => {}}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="bg-gray-200/80 rounded-3xl p-8 max-w-md w-full relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-center">
+                <div className="text-6xl mb-4">💳</div>
+                <h3
+                  className="text-2xl font-bold mb-4"
+                  style={{ color: "var(--black)" }}
+                >
+                  Faça um PIX! 💕
+                </h3>
+                <p
+                  className="text-lg mb-6"
+                  style={{ color: "var(--black-soft)" }}
+                >
+                  Que legal que você quer nos ajudar com um PIX!
+                </p>
+                <p className="text-base mb-6 text-zinc-900">
+                  Qualquer valor é muito bem-vindo e vai nos ajudar muito! 😊
+                </p>
+
+                {/* Chave PIX */}
+                <div className="glass-subtle rounded-xl p-4 mb-6">
+                  <p
+                    className="text-xs font-medium mb-2"
+                    style={{ color: "var(--gray)" }}
+                  >
+                    Chave PIX
+                  </p>
+                  <div className="flex items-center justify-center gap-2">
+                    <p
+                      className="text-sm md:text-lg font-bold break-all"
+                      style={{ color: "var(--terracota)" }}
+                    >
+                      carloslopessf@gmail.com
+                    </p>
+                    <motion.button
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          "carloslopessf@gmail.com"
+                        );
+                        alert("Chave PIX copiada! 📋");
+                      }}
+                      className="p-2 glass rounded-lg"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      title="Copiar chave PIX"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        style={{ color: "var(--terracota)" }}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </motion.button>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <motion.button
+                    onClick={handlePixSelection}
+                    className="w-full py-4 rounded-xl font-bold text-white"
+                    style={{ background: "var(--terracota)" }}
+                    whileHover={{
+                      scale: 1.02,
+                      boxShadow: "0 12px 40px 0 rgba(200, 121, 65, 0.4)",
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Confirmar PIX 💳
+                  </motion.button>
+
+                  <motion.button
+                    onClick={handleCancelPix}
+                    className="w-full py-3 rounded-xl font-medium glass"
+                    style={{ color: "var(--gray)" }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Cancelar
+                  </motion.button>
+                </div>
+
+                <p className="text-xs mt-6 text-zinc-700">
+                  Obrigadoo pelo carinho! 💕
                 </p>
               </div>
             </motion.div>

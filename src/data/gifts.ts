@@ -818,6 +818,16 @@ export const giftCategories: GiftCategory[] = [
   {
     id: "general",
     name: "Geral",
-    gifts: [],
+    gifts: [
+      {
+        id: "faca-um-pix",
+        name: "Faça um PIX",
+        category: "general",
+        links: [],
+        selectedBy: [],
+        maxAttempts: 999, // Permite múltiplas seleções
+        type: "pix" as any, // Tipo especial para PIX
+      },
+    ],
   },
 ];

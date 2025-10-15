@@ -9,6 +9,7 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase';
 
+
 // Salva uma confirmação de presença
 export async function saveConfirmation(confirmation: Omit<Confirmation, 'id'>) {
   try {
@@ -53,8 +54,13 @@ export async function getGifts(): Promise<Gift[]> {
 // Processa a coleção 'confirmations' e cria um Map de giftId -> array de nomes
 export async function getGiftsSelectionData(): Promise<Map<string, string[]>> {
   try {
-    const querySnapshot = await getDocs(collection(db, 'confirmations'));
+    const confirmationsRef = collection(db, 'confirmations');
+    const querySnapshot = await getDocs(confirmationsRef);
     const selectionData = new Map<string, string[]>();
+    
+    if (querySnapshot.empty) {
+      return selectionData;
+    }
     
     querySnapshot.forEach((doc) => {
       const data = doc.data();

@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  CheckCircleIcon,
-  HeartIcon,
-  SparklesIcon,
-  XMarkIcon,
+    CheckCircleIcon,
+    HeartIcon,
+    SparklesIcon,
+    XMarkIcon,
 } from "@heroicons/react/24/solid";
 import confetti from "canvas-confetti";
 import { AnimatePresence, motion } from "framer-motion";
@@ -26,6 +26,9 @@ export default function ThankYouPage({
   const [emailError, setEmailError] = useState("");
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+
+  // Verifica se o presente selecionado é PIX
+  const isPixGift = selectedGiftNames.includes("Faça um PIX");
 
   useEffect(() => {
     // Efeito de confetti quando a página carrega - mais sutil
@@ -228,13 +231,14 @@ export default function ThankYouPage({
             </p>
           </motion.div>
 
-          {/* Seção de PIX */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            className="mb-8"
-          >
+          {/* Seção de PIX - apenas se não for presente PIX */}
+          {!isPixGift && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="mb-8"
+            >
             <div
               className="glass-strong rounded-2xl p-8 text-center border-2"
               style={{ borderColor: "var(--terracota-light)" }}
@@ -314,6 +318,7 @@ export default function ThankYouPage({
               </p>
             </div>
           </motion.div>
+          )}
 
           {/* Pergunta sobre email */}
           {!emailSent && (

@@ -4,7 +4,7 @@ export interface Gift {
   category: string;
   links?: string[]; // Array de links para o produto (múltiplas opções)
   selectedBy: string[]; // Array de nomes que já escolheram (vem do Firebase)
-  type?: "cheap" | "super-cheap";
+  type?: "cheap" | "super-cheap" | "pix";
   maxAttempts: number; // Quantidade máxima de vezes que pode ser escolhido
 }
 
