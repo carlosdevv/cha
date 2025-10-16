@@ -826,7 +826,7 @@ export const giftCategories: GiftCategory[] = [
         links: [],
         selectedBy: [],
         maxAttempts: 999, // Permite múltiplas seleções
-        type: "pix" as any, // Tipo especial para PIX
+        type: "pix", // Tipo especial para PIX
       },
     ],
   },
