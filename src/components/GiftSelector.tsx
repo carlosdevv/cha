@@ -1,7 +1,7 @@
 "use client";
 
 import { Gift, GiftCategory } from "@/app/types";
-import { getGiftsSelectionData } from "@/lib/firebaseService";
+import { db } from "@/lib/firebase";
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -9,6 +9,7 @@ import {
   ShoppingBagIcon,
   XCircleIcon,
 } from "@heroicons/react/24/solid";
+import { collection, onSnapshot } from "firebase/firestore";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
@@ -49,32 +50,58 @@ export default function GiftSelector({
     useState<GiftCategory[]>(categories);
   const [showPixModal, setShowPixModal] = useState(false);
 
-  // Busca dados do Firebase ao montar o componente
+  // Listener em tempo real para atualizações do Firebase
   useEffect(() => {
-    const loadFirebaseData = async () => {
-      try {
-        const selectionData = await getGiftsSelectionData();
+    const unsubscribe = onSnapshot(
+      collection(db, 'confirmations'),
+      async (snapshot) => {
+        try {
+          // Processa as confirmações para criar o mapa de seleções
+          const selectionData = new Map<string, string[]>();
+          
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            const name = data.name;
+            const selectedGifts = data.selectedGifts;
+            
+            if (Array.isArray(selectedGifts)) {
+              selectedGifts.forEach((giftId: string) => {
+                if (selectionData.has(giftId)) {
+                  const currentNames = selectionData.get(giftId)!;
+                  currentNames.push(name);
+                } else {
+                  selectionData.set(giftId, [name]);
+                }
+              });
+            }
+          });
 
-        // Mescla dados do Firebase com os presentes locais
-        const updatedCategories = categories.map((category) => ({
-          ...category,
-          gifts: category.gifts.map((gift) => {
-            const firebaseSelectedBy = selectionData.get(gift.id) || [];
-            return {
-              ...gift,
-              selectedBy: firebaseSelectedBy,
-            };
-          }),
-        }));
+          // Mescla dados do Firebase com os presentes locais
+          const updatedCategories = categories.map((category) => ({
+            ...category,
+            gifts: category.gifts.map((gift) => {
+              const firebaseSelectedBy = selectionData.get(gift.id) || [];
+              return {
+                ...gift,
+                selectedBy: firebaseSelectedBy,
+              };
+            }),
+          }));
 
-        setMergedCategories(updatedCategories);
-      } catch (error) {
-        console.error("Erro ao carregar dados do Firebase:", error);
+          setMergedCategories(updatedCategories);
+        } catch (error) {
+          console.error("Erro ao processar dados do Firebase:", error);
+          setMergedCategories(categories);
+        }
+      },
+      (error) => {
+        console.error("Erro no listener do Firebase:", error);
         setMergedCategories(categories);
       }
-    };
+    );
 
-    loadFirebaseData();
+    // Cleanup do listener quando o componente for desmontado
+    return () => unsubscribe();
   }, [categories]);
 
   const fetchGiftPreview = useCallback(async (giftId: string, url: string) => {
@@ -110,6 +137,9 @@ export default function GiftSelector({
     // Verifica se o item está esgotado
     const isSoldOut = gift.selectedBy.length >= gift.maxAttempts;
     if (isSoldOut) {
+      // Mostra aviso de esgotado
+      setShowAlreadySelectedWarning(gift.id);
+      setTimeout(() => setShowAlreadySelectedWarning(null), 3000);
       return; // Não permite selecionar se esgotado
     }
 
@@ -122,11 +152,13 @@ export default function GiftSelector({
     const newSelected = new Set(selectedGifts);
 
     if (newSelected.has(gift.id)) {
+      // Deseleciona o presente
       newSelected.delete(gift.id);
       setShowAlreadySelectedWarning(null);
     } else {
-      // Se o presente já foi escolhido por outra pessoa, mostra aviso
+      // Verifica se o presente já foi escolhido por outra pessoa
       if (gift.selectedBy.length > 0) {
+        // Mostra aviso mas ainda permite selecionar (pode ser que o usuário queira mesmo assim)
         setShowAlreadySelectedWarning(gift.id);
         setTimeout(() => setShowAlreadySelectedWarning(null), 5000);
       }
@@ -657,7 +689,7 @@ export default function GiftSelector({
 
                             {/* Warning para presentes já escolhidos */}
                             <AnimatePresence>
-                              {showWarning && !isSoldOut && (
+                              {showWarning && (
                                 <motion.div
                                   initial={{ opacity: 0, y: -10, scale: 0.9 }}
                                   animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -667,24 +699,39 @@ export default function GiftSelector({
                                   <div
                                     className="glass-strong rounded-xl p-3 shadow-xl"
                                     style={{
-                                      border:
-                                        "2px solid var(--terracota-light)",
+                                      border: isSoldOut
+                                        ? "2px solid #ef4444"
+                                        : "2px solid var(--terracota-light)",
                                     }}
                                   >
                                     <div className="flex items-start gap-2">
                                       <ExclamationCircleIcon
                                         className="w-5 h-5 flex-shrink-0 mt-0.5"
-                                        style={{ color: "var(--terracota)" }}
+                                        style={{ 
+                                          color: isSoldOut ? "#ef4444" : "var(--terracota)" 
+                                        }}
                                       />
                                       <p
                                         className="text-sm"
                                         style={{ color: "var(--black-soft)" }}
                                       >
-                                        <span className="font-semibold">
-                                          Opa!
-                                        </span>{" "}
-                                        Esse item já foi pego. Por que você não
-                                        pega um novo, po? 😉
+                                        {isSoldOut ? (
+                                          <>
+                                            <span className="font-semibold">
+                                              Esgotado! 😔
+                                            </span>{" "}
+                                            Este presente já foi escolhido por {gift.selectedBy.length} pessoa(s). 
+                                            Que tal escolher outro? 💝
+                                          </>
+                                        ) : (
+                                          <>
+                                            <span className="font-semibold">
+                                              Atenção! ⚠️
+                                            </span>{" "}
+                                            Este item já foi escolhido por {gift.selectedBy.length} pessoa(s). 
+                                            Você ainda pode selecioná-lo se quiser! 😊
+                                          </>
+                                        )}
                                       </p>
                                     </div>
                                   </div>
