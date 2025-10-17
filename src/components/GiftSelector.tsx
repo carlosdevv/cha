@@ -151,16 +151,26 @@ export default function GiftSelector({
     const targetNames = [
       "caio",
       "berman",
+      "benjamin",
+      "benja",
+      "mateus santana",
+      "matheus santana",
+      "duda",
+      "maria eduarda",
       "clarissa",
       "gerson",
       "luiz",
+      "lipe",
       "luiz felipe",
       "lara",
       "emily",
+      "emilly",
+      "milly",
+      "mily",
       "luana",
       "nogueira",
-      "geovanna",
-      "geovana",
+      "nog",
+      "leonardo nogueira"
     ];
 
     // Verifica se o nome contém algum dos nomes da lista
