@@ -358,6 +358,9 @@ export default function GiftSelector({
           <p className="text-sm" style={{ color: "var(--gray)", opacity: 0.8 }}>
             Você pode selecionar quantos quiser! ✨
           </p>
+          <p className="text-sm" style={{ color: "var(--gray)", opacity: 0.8 }}>
+            💡 Os links são apenas sugestões de onde comprar - você pode escolher qualquer loja que preferir! 
+          </p>
 
           {/* Contador de selecionados */}
           <motion.div
