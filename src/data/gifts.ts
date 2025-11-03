@@ -54,7 +54,7 @@ export const giftCategories: GiftCategory[] = [
         name: "Microondas",
         category: "most-wanted",
         links: [
-          "https://loja.electrolux.com.br/micro-ondas-painel-integrado-electrolux-mi41s/p?idsku=2001806&gad_campaignid=22835827172&gbraid=0AAAAADpuC9sabT4WMjWk4XO8cTJIRRZ-o",
+          "https://www.brastemp.com.br/micro-ondas-brastemp-20-litros-cor-inox-espelhado-com-funcoes-pre-preparo-bms20ar/p?idsku=326020143&gad_source=1&gad_campaignid=21161988368&gbraid=0AAAAADJ0Bqoo0BEzxhLhy0kvpnd6fqtk3&gclid=CjwKCAiAwqHIBhAEEiwAx9cTefEC8q6M7F59ihmK1qbqN5HaeBIQiTybNgiPbW29lIG3ZlUfMPfmLxoCQ7YQAvD_BwE",
         ],
         selectedBy: [],
         maxAttempts: 1,
@@ -64,7 +64,7 @@ export const giftCategories: GiftCategory[] = [
         name: "Lava Louça",
         category: "most-wanted",
         links: [
-          "https://www.brastemp.com.br/micro-ondas-brastemp-20-litros-cor-inox-espelhado-com-funcoes-pre-preparo-bms20ar/p?idsku=326020143&gad_source=1&gad_campaignid=21161988368&gbraid=0AAAAADJ0Bqoo0BEzxhLhy0kvpnd6fqtk3&gclid=CjwKCAiAwqHIBhAEEiwAx9cTefEC8q6M7F59ihmK1qbqN5HaeBIQiTybNgiPbW29lIG3ZlUfMPfmLxoCQ7YQAvD_BwE",
+          "https://loja.electrolux.com.br/lava-louca-electrolux-10-servicos-inox-com-programa-lava-e-seca-50---ls10e-/p?idsku=310128256&gad_campaignid=17414288082&gbraid=0AAAAADpuC9tr27r8mCoc-FRh8tQ9Ho7V6",
         ],
         selectedBy: [],
         maxAttempts: 1,
